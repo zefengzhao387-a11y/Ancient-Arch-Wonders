@@ -937,10 +937,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 549824115}
-  scrollFlyClip: {fileID: 32900000, guid: 44df51f058add9f4c8bc2a4dfcfb97a1, type: 3}
+  scrollFlyClip: {fileID: 0}
   videoDisplay: {fileID: 1737222542}
   clickOverlay: {fileID: 360909315}
-  unfurlClip: {fileID: 32900000, guid: 8e68b827fbbd4454bba8cabf53a20b8b, type: 3}
+  unfurlClip: {fileID: 0}
   drawingPanel: {fileID: 94405274}
   drawingImage: {fileID: 94405275}
   drawingSprite: {fileID: 21300000, guid: ee030bc476286184eafa996fce3aa36e, type: 3}

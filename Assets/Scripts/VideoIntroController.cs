@@ -76,11 +76,11 @@ public class VideoIntroController : MonoBehaviour
             }
             else
             {
-                var url = System.IO.Path.Combine(Application.streamingAssetsPath, "intro.mp4");
-                if (System.IO.File.Exists(url))
+                const string streamingName = "intro.mp4";
+                if (VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
                 {
                     videoPlayer.source = VideoSource.Url;
-                    videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(url);
+                    videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
                 }
             }
 
