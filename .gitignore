@@ -18,8 +18,14 @@ MemoryCaptures/
 
 # Root-level only (do not use [Bb]uild/ at repo root — that would also match gameweb/Build/)
 /Build/
-# Prebuilt WebGL data often exceeds GitHub 100MB/file; keep locally and deploy (e.g. Vercel CLI) or use Git LFS.
-/gameweb/Build/
+# Prebuilt WebGL data often exceeds GitHub 100MB/file.
+# Keep loader/framework/wasm in git for Vercel deployment, but keep large data file on OSS.
+!/gameweb/Build/
+/gameweb/Build/*
+!/gameweb/Build/gameweb.loader.js
+!/gameweb/Build/gameweb.framework.js.br
+!/gameweb/Build/gameweb.wasm.br
+/gameweb/Build/gameweb.data.br
 
 # OS
 .DS_Store
