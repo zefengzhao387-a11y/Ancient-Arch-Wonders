@@ -58,10 +58,30 @@
         updateBannerVisibility();
       }
 
+      function getQueryParam(name) {
+        try {
+          var params = new URLSearchParams(window.location.search || "");
+          return params.get(name) || "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function trimTrailingSlash(url) {
+        if (!url) return "";
+        return url.replace(/\/+$/, "");
+      }
+
       var buildUrl = "Build";
+      var dataBaseUrl = trimTrailingSlash(getQueryParam("dataBaseUrl"));
+      var dataUrlOverride = getQueryParam("dataUrl");
+      var resolvedDataUrl = dataUrlOverride
+        ? dataUrlOverride
+        : (dataBaseUrl ? (dataBaseUrl + "/gameweb.data.br") : (buildUrl + "/gameweb.data.br"));
+
       var loaderUrl = buildUrl + "/gameweb.loader.js";
       var config = {
-        dataUrl: buildUrl + "/gameweb.data.br",
+        dataUrl: resolvedDataUrl,
         frameworkUrl: buildUrl + "/gameweb.framework.js.br",
         codeUrl: buildUrl + "/gameweb.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
