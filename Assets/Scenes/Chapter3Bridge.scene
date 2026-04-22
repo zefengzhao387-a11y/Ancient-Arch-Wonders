@@ -1889,10 +1889,15 @@ MonoBehaviour:
   - {fileID: 975322786}
   seasonSprites: []
   seasonVideos:
-  - {fileID: 32900000, guid: 3564dc1a4114f234cac07f3cfea95cf7, type: 3}
-  - {fileID: 32900000, guid: 0bf91ea46b309404c8d22e44fa5a8411, type: 3}
-  - {fileID: 32900000, guid: edd59d8424c666a4bbbaabf591882eb0, type: 3}
-  - {fileID: 32900000, guid: 305beb506dd204f46aec24c31193155b, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  seasonStreamingVideoNames:
+  - chapter3_spring.mp4
+  - chapter3_summer.mp4
+  - chapter3_autumn.mp4
+  - chapter3_winter.mp4
   seasonVideoDisplays:
   - {fileID: 1226384724}
   - {fileID: 1026431948}
@@ -1933,7 +1938,7 @@ MonoBehaviour:
   postWinVideoRoot: {fileID: 229988676}
   postWinVideoPlayer: {fileID: 904510145}
   postWinVideoDisplay: {fileID: 1903828896}
-  postWinVideoClip: {fileID: 32900000, guid: c455c4864a305f44c8e7744fed90651f, type: 3}
+  postWinVideoClip: {fileID: 0}
   postWinStreamingVideoName: chapter3_post_compass.mp4
   postWinFadeToBlackDuration: 0.85
   postWinVideoRevealDuration: 1

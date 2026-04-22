@@ -369,6 +369,7 @@ public static class SubtitleStyleUtility
 /// </summary>
 public static class VideoPlaybackUtility
 {
+    const string StreamingBaseUrlQueryKey = "streamingBaseUrl";
     /// <summary>
     /// 将物体提到场景根再 <see cref="Object.DontDestroyOnLoad"/>，避免「仅根物体可持久化」警告。
     /// </summary>
@@ -392,6 +393,104 @@ public static class VideoPlaybackUtility
             Debug.LogWarning($"VideoPlaybackUtility: Uri 失败，回退原始拼接。path={absolutePath} err={e.Message}");
             return "file:///" + absolutePath.Replace("\\", "/");
         }
+    }
+
+    /// <summary>
+    /// 解析 StreamingAssets 文件来源：
+    /// 1) 绝对 URL（http/https/file）原样返回；
+    /// 2) 若页面 URL 传了 streamingBaseUrl，则返回「基址 + 文件名」；
+    /// 3) 否则回退到本地 StreamingAssets 路径。
+    /// </summary>
+    public static string ResolveStreamingMediaUrl(string fileNameOrUrl)
+    {
+        if (string.IsNullOrEmpty(fileNameOrUrl)) return "";
+        if (IsAbsoluteUrl(fileNameOrUrl)) return fileNameOrUrl;
+
+        var baseUrl = GetExternalStreamingBaseUrl();
+        if (!string.IsNullOrEmpty(baseUrl))
+        {
+            var relative = fileNameOrUrl.Trim().TrimStart('/');
+            return baseUrl + "/" + EscapeUrlPath(relative);
+        }
+
+        var localPath = System.IO.Path.Combine(Application.streamingAssetsPath, fileNameOrUrl);
+        return FileUrlFromPath(localPath);
+    }
+
+    public static bool HasStreamingMediaSource(string fileNameOrUrl)
+    {
+        if (string.IsNullOrEmpty(fileNameOrUrl)) return false;
+        if (IsAbsoluteUrl(fileNameOrUrl)) return true;
+        if (!string.IsNullOrEmpty(GetExternalStreamingBaseUrl())) return true;
+        return System.IO.File.Exists(System.IO.Path.Combine(Application.streamingAssetsPath, fileNameOrUrl));
+    }
+
+    static string GetExternalStreamingBaseUrl()
+    {
+        // WebGL 可通过 index.html 地址参数传入：
+        // ?streamingBaseUrl=https://cdn.example.com/StreamingAssets
+        try
+        {
+            var absoluteUrl = Application.absoluteURL;
+            if (!string.IsNullOrEmpty(absoluteUrl))
+            {
+                var v = ExtractQueryParam(absoluteUrl, StreamingBaseUrlQueryKey);
+                if (!string.IsNullOrWhiteSpace(v))
+                    return NormalizeBaseUrl(v);
+            }
+        }
+        catch { }
+        return "";
+    }
+
+    static bool IsAbsoluteUrl(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return false;
+        if (!System.Uri.TryCreate(value, System.UriKind.Absolute, out var uri)) return false;
+        return uri.Scheme == System.Uri.UriSchemeHttp
+            || uri.Scheme == System.Uri.UriSchemeHttps
+            || uri.Scheme == System.Uri.UriSchemeFile;
+    }
+
+    static string NormalizeBaseUrl(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "";
+        var normalized = value.Trim().Trim('"', '\'');
+        while (normalized.EndsWith("/"))
+            normalized = normalized.Substring(0, normalized.Length - 1);
+        return normalized;
+    }
+
+    static string EscapeUrlPath(string relativePath)
+    {
+        if (string.IsNullOrEmpty(relativePath)) return "";
+        var parts = relativePath.Split('/');
+        for (int i = 0; i < parts.Length; i++)
+            parts[i] = System.Uri.EscapeDataString(parts[i]);
+        return string.Join("/", parts);
+    }
+
+    static string ExtractQueryParam(string fullUrl, string key)
+    {
+        if (string.IsNullOrEmpty(fullUrl) || string.IsNullOrEmpty(key)) return "";
+        if (!System.Uri.TryCreate(fullUrl, System.UriKind.Absolute, out var uri)) return "";
+        var query = uri.Query;
+        if (string.IsNullOrEmpty(query)) return "";
+
+        var trimmed = query.TrimStart('?');
+        var pairs = trimmed.Split('&');
+        foreach (var pair in pairs)
+        {
+            if (string.IsNullOrEmpty(pair)) continue;
+            var idx = pair.IndexOf('=');
+            var rawKey = idx >= 0 ? pair.Substring(0, idx) : pair;
+            if (!string.Equals(System.Uri.UnescapeDataString(rawKey), key, System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var rawValue = idx >= 0 && idx + 1 < pair.Length ? pair.Substring(idx + 1) : "";
+            return System.Uri.UnescapeDataString(rawValue);
+        }
+        return "";
     }
 
     public static RenderTexture CreateVideoRenderTexture(int width, int height)

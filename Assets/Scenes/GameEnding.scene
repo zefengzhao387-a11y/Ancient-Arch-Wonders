@@ -325,7 +325,7 @@ MonoBehaviour:
   videoPhaseRoot: {fileID: 678894024}
   videoPlayer: {fileID: 2008290699}
   videoDisplay: {fileID: 145788602}
-  videoPart1Clip: {fileID: 32900000, guid: e154f9827d179774aa08eef21def461a, type: 3}
+  videoPart1Clip: {fileID: 0}
   videoSubtitleText: {fileID: 850902973}
   videoSubtitleBar: {fileID: 0}
   part1SubtitleLine1: "\u6211\u4E0D\u4EC5\u4EC5\u662F\u80FD\u591F\u770B\u6E05\u695A\u53E4\u5EFA\u7B51"
@@ -334,7 +334,7 @@ MonoBehaviour:
   part1SubtitleLine2: "\u66F4\u662F\u80FD\u8BFB\u660E\u767D\u5B83\u4EEC\u7684\u5386\u53F2\uFF0C\u80FD\u66F4\u597D\u5730\u4FEE\u590D\u3001\u7231\u62A4\u7740\u5728\u98CE\u96E8\u98D8\u6447\u7684\u5C81\u6708\u91CC\u71A0\u71A0\u751F\u8F89\u7684\u5B83\u4EEC\u3002"
   part1SubtitleVoice2: {fileID: 8300000, guid: 0eef662a9add257489b9c0cd03f2728e, type: 3}
   part1SubtitleMinHold2: 2
-  videoPart2Clip: {fileID: 32900000, guid: ed7575e0fbf05bb499ba0f301291dcc7, type: 3}
+  videoPart2Clip: {fileID: 0}
   part2SubtitleLine: "\u518D\u6B21\u6253\u5F00\u8FD9\u4E2A\u69AB\u536F\u76D2\u2026\u2026\u76D2\u5E95\uFF0C\u53EA\u5199\u7740\u4E00\u53E5\u8BDD
     \u2014\u2014"
   part2SubtitleVoice: {fileID: 8300000, guid: 0c63d6c7d21f6044aa7815dda4a72513, type: 3}
