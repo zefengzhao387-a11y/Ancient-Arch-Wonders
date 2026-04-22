@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/GameMenu.scene
+    guid: 0a1c024d85fb74148a7d9d56d80cf31b
+  - enabled: 1
+    path: Assets/Scenes/OpeningVideo.scene
+    guid: 58fd60b01375c224cb5b07dcbb1f5bff
+  - enabled: 1
+    path: Assets/Scenes/Outdoor.scene
+    guid: 688608c603ebb5841839decfd87e9cb6
+  - enabled: 1
+    path: Assets/Scenes/RulesVideo.scene
+    guid: c81edddf02c1d5c429f3ced29984e710
+  - enabled: 1
+    path: Assets/Scenes/TenonMortiseGame.scene
+    guid: 734697c3500a43f468d2e18527d58490
+  - enabled: 1
+    path: Assets/Scenes/Chapter1Outro.scene
+    guid: 129dc921933ab04479f2c3d4f29158cb
+  - enabled: 1
+    path: Assets/Scenes/VideoIntro.scene
+    guid: 7527aec6bf0c6ba4297fc56e3d924904
+  - enabled: 0
+    path: Assets/Scenes/MainMenu.scene
+    guid: 8fb7f002fe6962246905ebe837e49b30
+  - enabled: 0
+    path: Assets/Scenes/NarrationIntro.scene
+    guid: 40510a3632662004d84714d641da6cde
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.scene
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Scenes/BoxIntro.scene
+    guid: d36201667663a5746989f07f4ebd124a
+  - enabled: 1
+    path: Assets/Scenes/Chapter1Intro.scene
+    guid: 6d26f832cc76f2c4a8d7044a61294e61
+  - enabled: 0
+    path: Assets/Scenes/Chapter1.scene
+    guid: 3a0cade5d6e139c488e9e894599723a3
+  - enabled: 1
+    path: Assets/Scenes/Chapter2Title.scene
+    guid: 27a06c6527c75b344a51907ad7922652
+  - enabled: 1
+    path: Assets/Scenes/Chapter2Intro.scene
+    guid: c490c2e5a6f526343b2cc625c7f5e6c6
+  - enabled: 1
+    path: Assets/Scenes/Chapter2Shuijing.scene
+    guid: 47a626add0de7a446931d7735e919bab
+  - enabled: 1
+    path: Assets/Scenes/Chapter2Scroll.scene
+    guid: 51f6ca42596f93d42ad62502ab30547a
+  - enabled: 1
+    path: Assets/Scenes/Chapter2Platformer.scene
+    guid: ae22fcca7b4643247bd63ce5bbda1cd4
+  - enabled: 1
+    path: Assets/Scenes/Chapter2VideoEnd.scene
+    guid: 9b2089d01052ac8499a9f48160f24db3
+  - enabled: 1
+    path: Assets/Scenes/Chapter3Title.scene
+    guid: fa41ac1730984064a9e12b50aae42d20
+  - enabled: 1
+    path: Assets/Scenes/Chapter3Bridge.scene
+    guid: 08ceb04e8cf967f42854a856ea66177d
+  - enabled: 1
+    path: Assets/Scenes/GameEnding.scene
+    guid: c1effbf6be3e1fb46af9ae23edae89c8
+  m_BuildProfiles: []
+  m_configObjects: {}
+  m_SlimFeaturesWeixinMiniGame:
+    ACLDecompression: 0
+    AllocateOverhead: 1
+    DecompressASTC: 0
+    DecompressDXT: 0
+    DecompressETC: 1
+    FreeTypeSfntPng: 1
+    LightProbe: 2
+    RootMotion: 0
+    UseStringInternPool: 2

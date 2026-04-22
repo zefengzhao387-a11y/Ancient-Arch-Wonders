@@ -1,0 +1,44 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+MemoryCaptures/
+*.csproj
+*.sln
+.vs/
+*.user
+*.unitypackage
+*.apk
+*.aab
+*.exe
+*.app
+*.ipa
+
+# Root-level only (do not use [Bb]uild/ at repo root — that would also match gameweb/Build/)
+/Build/
+# Prebuilt WebGL data often exceeds GitHub 100MB/file; keep locally and deploy (e.g. Vercel CLI) or use Git LFS.
+/gameweb/Build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large local folders not needed in repo
+gamebuild/
+
+# 本地参赛材料 / 非 Unity 工程资源（勿推 GitHub）
+/2026032574*
+/第一章/
+/第二章/
+/第三章/
+/佐证材料/
+/画图/
+/素材_未使用/
+2-AI*.docx
+*.m4a
+源码.zip
+*_设计与开发文档.zip
+desktop.ini
+
