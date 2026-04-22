@@ -721,7 +721,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 69115263}
-  videoClip: {fileID: 0}
+  videoClip: {fileID: 32900000, guid: 28a28984d15a26e478bac20291e3db17, type: 3}
   videoDisplay: {fileID: 1975005484}
   fadeOverlay: {fileID: 1587011056}
   fadeInDuration: 1

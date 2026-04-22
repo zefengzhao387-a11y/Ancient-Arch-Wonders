@@ -78,11 +78,11 @@ public class RulesVideoController : MonoBehaviour
             }
             else
             {
-                const string streamingName = "rules.mp4";
-                if (VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
+                var url = System.IO.Path.Combine(Application.streamingAssetsPath, "rules.mp4");
+                if (System.IO.File.Exists(url))
                 {
                     videoPlayer.source = VideoSource.Url;
-                    videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
+                    videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(url);
                 }
             }
 

@@ -403,7 +403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 1529455147}
-  videoClip: {fileID: 0}
+  videoClip: {fileID: 32900000, guid: 7acbdd9c7513978488c997fcad3440e0, type: 3}
   videoDisplay: {fileID: 1384118756}
   dialogImage1: {fileID: 1872708267}
   dialogImage2: {fileID: 1469323375}

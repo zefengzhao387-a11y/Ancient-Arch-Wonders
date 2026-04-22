@@ -12,7 +12,6 @@ public class Chapter2ScrollController : MonoBehaviour
     [Header("卷轴飞来")]
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private VideoClip scrollFlyClip;
-    [SerializeField] private string scrollFlyStreamingName = "chapter2_scroll_fly.mp4";
     [SerializeField] private RawImage videoDisplay;
 
     [Header("点击区域（叠在视频最后一帧上）")]
@@ -20,7 +19,6 @@ public class Chapter2ScrollController : MonoBehaviour
 
     [Header("解卷轴动画")]
     [SerializeField] private VideoClip unfurlClip;
-    [SerializeField] private string unfurlStreamingName = "chapter2_unfurl.mp4";
 
     [Header("图四")]
     [SerializeField] private GameObject drawingPanel;
@@ -72,11 +70,13 @@ public class Chapter2ScrollController : MonoBehaviour
     private IEnumerator PlaySequence()
     {
         bool hasVideo = false;
-        if (videoPlayer != null && videoDisplay != null && TrySetVideoSource(scrollFlyClip, scrollFlyStreamingName))
+        if (videoPlayer != null && videoDisplay != null && scrollFlyClip != null)
         {
             videoPlayer.playOnAwake = false;
             videoPlayer.isLooping = false;
             videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+            videoPlayer.source = VideoSource.VideoClip;
+            videoPlayer.clip = scrollFlyClip;
             videoPlayer.Prepare();
             float t = 0;
             while (!videoPlayer.isPrepared && t < 10f) { t += Time.deltaTime; yield return null; }
@@ -112,7 +112,7 @@ public class Chapter2ScrollController : MonoBehaviour
     private void OnClickOverlay()
     {
         if (clickOverlay != null) clickOverlay.SetActive(false);
-        if (videoPlayer != null && (unfurlClip != null || VideoPlaybackUtility.HasStreamingMediaSource(unfurlStreamingName)))
+        if (unfurlClip != null && videoPlayer != null)
             StartCoroutine(PlayUnfurlThenShowDrawing());
         else
             OnUnfurlComplete();
@@ -120,11 +120,7 @@ public class Chapter2ScrollController : MonoBehaviour
 
     private IEnumerator PlayUnfurlThenShowDrawing()
     {
-        if (!TrySetVideoSource(unfurlClip, unfurlStreamingName))
-        {
-            OnUnfurlComplete();
-            yield break;
-        }
+        videoPlayer.clip = unfurlClip;
         videoPlayer.Prepare();
         float t = 0;
         while (!videoPlayer.isPrepared && t < 10f) { t += Time.deltaTime; yield return null; }
@@ -200,25 +196,5 @@ public class Chapter2ScrollController : MonoBehaviour
     private void OnDestroy()
     {
         if (_renderTexture != null) _renderTexture.Release();
-    }
-
-    private bool TrySetVideoSource(VideoClip clip, string streamingName)
-    {
-        if (videoPlayer == null) return false;
-        if (clip != null)
-        {
-            videoPlayer.source = VideoSource.VideoClip;
-            videoPlayer.clip = clip;
-            videoPlayer.url = "";
-            return true;
-        }
-
-        if (!VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
-            return false;
-
-        videoPlayer.source = VideoSource.Url;
-        videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
-        videoPlayer.clip = null;
-        return true;
     }
 }

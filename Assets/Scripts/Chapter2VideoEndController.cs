@@ -204,11 +204,11 @@ public class Chapter2VideoEndController : MonoBehaviour
             }
             else
             {
-                const string streamingName = "chapter2_end.mp4";
-                if (VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
+                var url = System.IO.Path.Combine(Application.streamingAssetsPath, "chapter2_end.mp4");
+                if (System.IO.File.Exists(url))
                 {
                     videoPlayer.source = VideoSource.Url;
-                    videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
+                    videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(url);
                 }
             }
             videoPlayer.Prepare();

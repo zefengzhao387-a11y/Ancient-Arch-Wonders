@@ -879,8 +879,7 @@ MonoBehaviour:
     image: {fileID: 0}
     animationFrames: []
     frameInterval: 0
-    video: {fileID: 0}
-    videoStreamingName: opening_step_1.mp4
+    video: {fileID: 32900000, guid: 02c55e12927f85a4a8d03a8217dec4ea, type: 3}
     videoFadeInDuration: 0.2
     voice: {fileID: 0}
     minDuration: 0.2
@@ -916,8 +915,7 @@ MonoBehaviour:
     image: {fileID: 0}
     animationFrames: []
     frameInterval: 0
-    video: {fileID: 0}
-    videoStreamingName: opening_step_2.mp4
+    video: {fileID: 32900000, guid: 4ab3b71e017ac7d4a98b92b1ff10badf, type: 3}
     videoFadeInDuration: 0.5
     voice: {fileID: 0}
     minDuration: 0.2
@@ -944,8 +942,8 @@ MonoBehaviour:
   fadeOutDuration: 0.8
   strictBlackFadeFromStepNumber: 6
   strictBlackSlideFadeInDuration: 0.55
-  bridgeTransitionClip: {fileID: 0}
-  bridgeTransitionStreamingName: intro_bridge.mp4
+  bridgeTransitionClip: {fileID: 32900000, guid: 51276d0260f0bb645887074ebc371968, type: 3}
+  bridgeTransitionStreamingName: 
   bridgeVideoFadeInDuration: 0.45
   bridgeToChapterFadeDuration: 0.85
   nextSceneName: Chapter1Intro

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -53,8 +54,6 @@ public class Chapter3BridgeController : MonoBehaviour
     [SerializeField] private Sprite[] seasonSprites;
     [Tooltip("春夏秋冬对应视频，指针指向该季节时在右侧播放")]
     [SerializeField] private VideoClip[] seasonVideos;
-    [Tooltip("春夏秋冬对应 StreamingAssets 文件名（当对应 seasonVideos 为空时生效）")]
-    [SerializeField] private string[] seasonStreamingVideoNames = new[] { "chapter3_spring.mp4", "chapter3_summer.mp4", "chapter3_autumn.mp4", "chapter3_winter.mp4" };
     [SerializeField] private RawImage[] seasonVideoDisplays;
     [SerializeField] private VideoPlayer[] seasonVideoPlayers;
     [Tooltip("春夏秋冬范围(度)，每季 X=起始 Y=结束。默认 春0-90 夏270-360 秋90-180 冬180-270")]
@@ -697,22 +696,20 @@ public class Chapter3BridgeController : MonoBehaviour
     {
         if (_prepareVideoCoroutine != null) { StopCoroutine(_prepareVideoCoroutine); _prepareVideoCoroutine = null; }
         StopSeasonVideo();
-        if (region < 0 || region > 3)
-            return;
-        if (seasonVideoPlayers == null || seasonVideoDisplays == null || region >= seasonVideoPlayers.Length || region >= seasonVideoDisplays.Length ||
-            seasonVideoPlayers[region] == null || seasonVideoDisplays[region] == null) return;
-
-        var vp = seasonVideoPlayers[region];
-        var disp = seasonVideoDisplays[region];
-        if (!TrySetSeasonVideoSource(region, vp, out VideoClip expectedClip, out string expectedUrl))
+        if (region < 0 || region > 3 || seasonVideos == null || region >= seasonVideos.Length || seasonVideos[region] == null)
         {
-            Debug.LogWarning($"Chapter3BridgeController：季节{region}(春0夏1秋2冬3)未配置视频源；请在 Season Videos 或 Season Streaming Video Names 中填写。");
+            if (region >= 0 && region <= 3)
+                Debug.LogWarning($"Chapter3BridgeController：季节{region}(春0夏1秋2冬3)的视频未分配，请在 Inspector → Season Videos 中拖入 4 个视频");
             return;
         }
-
+        if (seasonVideoPlayers == null || seasonVideoDisplays == null || region >= seasonVideoPlayers.Length || region >= seasonVideoDisplays.Length ||
+            seasonVideoPlayers[region] == null || seasonVideoDisplays[region] == null) return;
+        var vp = seasonVideoPlayers[region];
+        var disp = seasonVideoDisplays[region];
         disp.gameObject.SetActive(true);
         if (!vp.enabled) vp.enabled = true;
         vp.playOnAwake = false;
+        vp.clip = seasonVideos[region];
         vp.isLooping = true;
         vp.renderMode = VideoRenderMode.RenderTexture;
         vp.skipOnDrop = true;
@@ -720,22 +717,15 @@ public class Chapter3BridgeController : MonoBehaviour
         vp.errorReceived -= OnSeasonVideoError;
         vp.errorReceived += OnSeasonVideoError;
         vp.Prepare();
-        _prepareVideoCoroutine = StartCoroutine(PrepareAndPlaySeasonVideo(vp, disp, region, expectedClip, expectedUrl));
+        _prepareVideoCoroutine = StartCoroutine(PrepareAndPlaySeasonVideo(vp, disp, region));
     }
 
-    IEnumerator PrepareAndPlaySeasonVideo(VideoPlayer vp, RawImage disp, int region, VideoClip expectedClip, string expectedUrl)
+    IEnumerator PrepareAndPlaySeasonVideo(VideoPlayer vp, RawImage disp, int region)
     {
         if (vp == null || disp == null) { _prepareVideoCoroutine = null; yield break; }
         float t = 0;
         while (!vp.isPrepared && t < 5f) { t += Time.deltaTime; yield return null; }
-        if (expectedClip != null)
-        {
-            if (vp.clip != expectedClip) { _prepareVideoCoroutine = null; yield break; }
-        }
-        else if (!string.IsNullOrEmpty(expectedUrl))
-        {
-            if (vp.source != VideoSource.Url || vp.url != expectedUrl) { _prepareVideoCoroutine = null; yield break; }
-        }
+        if (vp.clip != seasonVideos[region]) { _prepareVideoCoroutine = null; yield break; }
         if (vp.isPrepared)
         {
             if (vp.targetTexture == null)
@@ -758,34 +748,6 @@ public class Chapter3BridgeController : MonoBehaviour
             FallbackToSeasonSprite(region);
         }
         _prepareVideoCoroutine = null;
-    }
-
-    bool TrySetSeasonVideoSource(int region, VideoPlayer vp, out VideoClip expectedClip, out string expectedUrl)
-    {
-        expectedClip = null;
-        expectedUrl = "";
-        if (vp == null) return false;
-
-        if (seasonVideos != null && region >= 0 && region < seasonVideos.Length && seasonVideos[region] != null)
-        {
-            expectedClip = seasonVideos[region];
-            vp.source = VideoSource.VideoClip;
-            vp.clip = expectedClip;
-            vp.url = "";
-            return true;
-        }
-
-        string streamingName = "";
-        if (seasonStreamingVideoNames != null && region >= 0 && region < seasonStreamingVideoNames.Length)
-            streamingName = seasonStreamingVideoNames[region];
-        if (!VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
-            return false;
-
-        expectedUrl = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
-        vp.source = VideoSource.Url;
-        vp.url = expectedUrl;
-        vp.clip = null;
-        return true;
     }
 
     void OnSeasonVideoError(VideoPlayer vp, string msg)
@@ -844,7 +806,7 @@ public class Chapter3BridgeController : MonoBehaviour
         if (postWinVideoPlayer == null || postWinVideoDisplay == null) return false;
         if (postWinVideoClip != null) return true;
         if (string.IsNullOrEmpty(postWinStreamingVideoName)) return false;
-        return VideoPlaybackUtility.HasStreamingMediaSource(postWinStreamingVideoName);
+        return File.Exists(Path.Combine(Application.streamingAssetsPath, postWinStreamingVideoName));
     }
 
     private IEnumerator PostWinSequence()
@@ -899,9 +861,9 @@ public class Chapter3BridgeController : MonoBehaviour
             }
             else
             {
-                var path = VideoPlaybackUtility.ResolveStreamingMediaUrl(postWinStreamingVideoName);
+                var path = Path.Combine(Application.streamingAssetsPath, postWinStreamingVideoName);
                 postWinVideoPlayer.source = VideoSource.Url;
-                postWinVideoPlayer.url = path;
+                postWinVideoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(path);
                 postWinVideoPlayer.clip = null;
             }
 

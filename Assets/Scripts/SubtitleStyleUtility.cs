@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Video;
 
 /// <summary>
-/// 统一字幕：默认内置字体（LegacyRuntime）；默认<strong>无</strong>渐变黑条与纯黑垫底，用 <see cref="Outline"/> 黑色描边保证可读性。
+/// 统一字幕：思源宋体；默认<strong>无</strong>渐变黑条与纯黑垫底，用 <see cref="Outline"/> 黑色描边保证可读性。
 /// 若需旧版全屏宽渐变黑条，调用 <see cref="ApplyToSubtitle"/> 时设 <c>useGradientBackdrop: true</c>（底条与 Text 同父、先于文字绘制）。
 /// </summary>
 public static class SubtitleStyleUtility
@@ -27,9 +27,27 @@ public static class SubtitleStyleUtility
     /// <summary>纯黑垫底 alpha（与渐变相乘叠色）；淡入淡出时请按「目标 alpha × 系数」缩放。</summary>
     public const float SolidUnderlayTargetAlpha = 0.52f;
 
+    static readonly string[] FontResourcePaths =
+    {
+        "Fonts/SourceHanSerifSC-Regular",
+        "Fonts/SourceHanSerifSC-Medium",
+        "Fonts/SourceHanSerifCN-Regular",
+        "Fonts/NotoSerifCJKsc-Regular",
+        "Fonts/NotoSerifSC-Regular",
+    };
+
     public static Font GetSubtitleFont()
     {
         if (_font != null) return _font;
+        foreach (var path in FontResourcePaths)
+        {
+            var f = Resources.Load<Font>(path);
+            if (f != null)
+            {
+                _font = f;
+                return _font;
+            }
+        }
         _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         return _font;
     }
@@ -351,11 +369,6 @@ public static class SubtitleStyleUtility
 /// </summary>
 public static class VideoPlaybackUtility
 {
-    const string StreamingBaseUrlQueryKey = "streamingBaseUrl";
-    const string StreamingBaseUrlPlayerPrefsKey = "AAW_STREAMING_BASE_URL";
-    static string _cachedStreamingBaseUrl;
-    static bool _streamingBaseUrlCached;
-
     /// <summary>
     /// 将物体提到场景根再 <see cref="Object.DontDestroyOnLoad"/>，避免「仅根物体可持久化」警告。
     /// </summary>
@@ -379,135 +392,6 @@ public static class VideoPlaybackUtility
             Debug.LogWarning($"VideoPlaybackUtility: Uri 失败，回退原始拼接。path={absolutePath} err={e.Message}");
             return "file:///" + absolutePath.Replace("\\", "/");
         }
-    }
-
-    /// <summary>
-    /// 解析 StreamingAssets 文件来源：
-    /// 1) 绝对 URL（http/https/file）原样返回；
-    /// 2) 若配置了外链基址，则返回「基址 + 文件名」；
-    /// 3) 否则回退到本地 StreamingAssets 路径。
-    /// </summary>
-    public static string ResolveStreamingMediaUrl(string fileNameOrUrl)
-    {
-        if (string.IsNullOrEmpty(fileNameOrUrl)) return "";
-        if (IsAbsoluteUrl(fileNameOrUrl)) return fileNameOrUrl;
-
-        var baseUrl = GetExternalStreamingBaseUrl();
-        if (!string.IsNullOrEmpty(baseUrl))
-        {
-            var relative = fileNameOrUrl.Trim().TrimStart('/');
-            return baseUrl + "/" + EscapeUrlPath(relative);
-        }
-
-        var localPath = System.IO.Path.Combine(Application.streamingAssetsPath, fileNameOrUrl);
-        return FileUrlFromPath(localPath);
-    }
-
-    public static bool HasStreamingMediaSource(string fileNameOrUrl)
-    {
-        if (string.IsNullOrEmpty(fileNameOrUrl)) return false;
-        if (IsAbsoluteUrl(fileNameOrUrl)) return true;
-        if (!string.IsNullOrEmpty(GetExternalStreamingBaseUrl())) return true;
-        return System.IO.File.Exists(System.IO.Path.Combine(Application.streamingAssetsPath, fileNameOrUrl));
-    }
-
-    public static string GetExternalStreamingBaseUrl()
-    {
-        if (_streamingBaseUrlCached) return _cachedStreamingBaseUrl;
-        _streamingBaseUrlCached = true;
-
-        string value = null;
-
-        // WebGL 可通过 index.html 地址参数传入，例如：
-        // https://example.com/index.html?streamingBaseUrl=https://cdn.example.com/aa
-        try
-        {
-            var absoluteUrl = Application.absoluteURL;
-            if (!string.IsNullOrEmpty(absoluteUrl))
-                value = ExtractQueryParam(absoluteUrl, StreamingBaseUrlQueryKey);
-        }
-        catch { }
-
-        if (string.IsNullOrEmpty(value))
-        {
-            try
-            {
-                value = PlayerPrefs.GetString(StreamingBaseUrlPlayerPrefsKey, "");
-            }
-            catch { }
-        }
-
-        if (string.IsNullOrEmpty(value))
-        {
-            try
-            {
-                value = System.Environment.GetEnvironmentVariable(StreamingBaseUrlPlayerPrefsKey);
-            }
-            catch { }
-        }
-
-        _cachedStreamingBaseUrl = NormalizeBaseUrl(value);
-        if (!string.IsNullOrEmpty(_cachedStreamingBaseUrl))
-            Debug.Log($"VideoPlaybackUtility: using external streaming base URL: {_cachedStreamingBaseUrl}");
-        return _cachedStreamingBaseUrl;
-    }
-
-    public static void SetExternalStreamingBaseUrlRuntime(string baseUrl, bool persistToPlayerPrefs = false)
-    {
-        _cachedStreamingBaseUrl = NormalizeBaseUrl(baseUrl);
-        _streamingBaseUrlCached = true;
-        if (persistToPlayerPrefs)
-            PlayerPrefs.SetString(StreamingBaseUrlPlayerPrefsKey, _cachedStreamingBaseUrl ?? "");
-    }
-
-    static bool IsAbsoluteUrl(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return false;
-        if (!System.Uri.TryCreate(value, System.UriKind.Absolute, out var uri)) return false;
-        return uri.Scheme == System.Uri.UriSchemeHttp
-            || uri.Scheme == System.Uri.UriSchemeHttps
-            || uri.Scheme == System.Uri.UriSchemeFile;
-    }
-
-    static string NormalizeBaseUrl(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return "";
-        var normalized = value.Trim().Trim('"', '\'');
-        while (normalized.EndsWith("/"))
-            normalized = normalized.Substring(0, normalized.Length - 1);
-        return normalized;
-    }
-
-    static string EscapeUrlPath(string relativePath)
-    {
-        if (string.IsNullOrEmpty(relativePath)) return "";
-        var parts = relativePath.Split('/');
-        for (int i = 0; i < parts.Length; i++)
-            parts[i] = System.Uri.EscapeDataString(parts[i]);
-        return string.Join("/", parts);
-    }
-
-    static string ExtractQueryParam(string fullUrl, string key)
-    {
-        if (string.IsNullOrEmpty(fullUrl) || string.IsNullOrEmpty(key)) return "";
-        if (!System.Uri.TryCreate(fullUrl, System.UriKind.Absolute, out var uri)) return "";
-        var query = uri.Query;
-        if (string.IsNullOrEmpty(query)) return "";
-
-        var trimmed = query.TrimStart('?');
-        var pairs = trimmed.Split('&');
-        foreach (var pair in pairs)
-        {
-            if (string.IsNullOrEmpty(pair)) continue;
-            var idx = pair.IndexOf('=');
-            var rawKey = idx >= 0 ? pair.Substring(0, idx) : pair;
-            if (!string.Equals(System.Uri.UnescapeDataString(rawKey), key, System.StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            var rawValue = idx >= 0 && idx + 1 < pair.Length ? pair.Substring(idx + 1) : "";
-            return System.Uri.UnescapeDataString(rawValue);
-        }
-        return "";
     }
 
     public static RenderTexture CreateVideoRenderTexture(int width, int height)

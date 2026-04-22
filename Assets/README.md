@@ -127,19 +127,3 @@
 
 ### 若出现「Coroutine couldn't be started because the game object is inactive」
 - 说明 TenonMortiseIntroDisplay 挂在未激活的 Panel 上。解决：新建空物体 `TenonMortiseIntroController`（放 Canvas 下），挂 TenonMortiseIntroDisplay，把 panelRoot、introImage、fadeOverlay、continueButton 指向 TenonMortiseIntroPanel 内对应子物体，然后从 Panel 上移除该组件，MatchToMeasurementBridge 的 introDisplay 改为指向新物体
-
-### WebGL 外链 StreamingAssets（减小主包）
-- 视频控制器现支持统一外链：若页面 URL 带参数 `streamingBaseUrl`，则会将 StreamingAssets 文件名拼成外链；未提供参数时仍走本地 `StreamingAssets`。
-- 若仅 `gameweb.data.br` 超过平台限制，可在页面 URL 传 `dataBaseUrl`（或 `dataUrl`）把大 `data` 文件单独走 OSS/CDN，`framework/wasm/loader` 仍走当前站点。
-- 示例（将视频放到 OSS/CDN 的同一路径）：
-  - `https://your-site/index.html?streamingBaseUrl=https://cdn.example.com/AncientArchWonders/StreamingAssets`
-  - 这样 `intro.mp4` 会请求为 `https://cdn.example.com/AncientArchWonders/StreamingAssets/intro.mp4`
-- 示例（仅外链 data 文件）：
-  - `https://your-site/index.html?dataBaseUrl=https://cdn.example.com/AncientArchWonders/Build&streamingBaseUrl=https://cdn.example.com/AncientArchWonders/StreamingAssets`
-  - 或直接 `dataUrl=https://cdn.example.com/AncientArchWonders/Build/gameweb.data.br`
-- 受影响的默认文件名：`intro.mp4`、`rules.mp4`、`chapter1_outro.mp4`、`chapter2_end.mp4`、`bridgeTransitionStreamingName`、`postWinStreamingVideoName`、`ending_part1.mp4`、`ending_part2.mp4`、`chapter2_scroll_fly.mp4`、`chapter2_unfurl.mp4`、`opening_step_1.mp4`、`opening_step_2.mp4`、`chapter3_spring.mp4`、`chapter3_summer.mp4`、`chapter3_autumn.mp4`、`chapter3_winter.mp4`。
-- 若用中文文件名，请确保对象存储允许 URL 编码访问，并为站点域名配置 CORS（`GET/HEAD`）。
-
-### 运行时字体统一（UI Text）
-- 已新增 `RuntimeUIFontNormalizer`：场景加载时会把 `UnityEngine.UI.Text` 与 `TMP_Text` 统一替换为运行时字体，避免个别场景出现不一致。
-- 当前默认策略为内置 `LegacyRuntime.ttf`（不依赖 `Resources/Fonts` 下大字体资源，可减少 WebGL 包体）。

@@ -317,14 +317,14 @@ public class GameEndingController : MonoBehaviour
         }
         else
         {
-            if (!VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
+            var path = System.IO.Path.Combine(Application.streamingAssetsPath, streamingName);
+            if (!System.IO.File.Exists(path))
             {
                 videoPlayer.errorReceived -= onErr;
                 yield break;
             }
-            var path = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
             videoPlayer.source = VideoSource.Url;
-            videoPlayer.url = path;
+            videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(path);
             videoPlayer.clip = null;
         }
 
@@ -416,7 +416,7 @@ public class GameEndingController : MonoBehaviour
 
     private static bool HasStreamingClip(string fileName)
     {
-        return VideoPlaybackUtility.HasStreamingMediaSource(fileName);
+        return System.IO.File.Exists(System.IO.Path.Combine(Application.streamingAssetsPath, fileName));
     }
 
     private static float SubtitleWait(float minHold, AudioClip clip)

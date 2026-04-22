@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -51,8 +52,6 @@ public class OpeningVideoController : MonoBehaviour
         public float frameInterval = 0.12f;
         [Tooltip("视频步使用的视频")]
         public VideoClip video;
-        [Tooltip("未拖 VideoClip 时尝试此 StreamingAssets 文件名（或传完整 URL）")]
-        public string videoStreamingName;
         [Tooltip("视频步画面渐显时长(秒)，仅 Video 类型生效")]
         public float videoFadeInDuration = 0.2f;
         [Tooltip("独立配音，可留空")]
@@ -309,7 +308,7 @@ public class OpeningVideoController : MonoBehaviour
     {
         if (bridgeTransitionClip != null) return true;
         if (string.IsNullOrEmpty(bridgeTransitionStreamingName)) return false;
-        return VideoPlaybackUtility.HasStreamingMediaSource(bridgeTransitionStreamingName);
+        return File.Exists(Path.Combine(Application.streamingAssetsPath, bridgeTransitionStreamingName));
     }
 
     private IEnumerator PlayBridgeTransitionThenLoad()
@@ -377,9 +376,9 @@ public class OpeningVideoController : MonoBehaviour
         }
         else
         {
-            var path = VideoPlaybackUtility.ResolveStreamingMediaUrl(bridgeTransitionStreamingName);
+            var path = Path.Combine(Application.streamingAssetsPath, bridgeTransitionStreamingName);
             videoPlayer.source = VideoSource.Url;
-            videoPlayer.url = path;
+            videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(path);
             videoPlayer.clip = null;
         }
 
@@ -766,13 +765,12 @@ public class OpeningVideoController : MonoBehaviour
     private IEnumerator PlayVideoForStep(OpeningStep step, System.Action<float> onWaited)
     {
         VideoClip clip = step != null ? step.video : null;
-        string streamingName = step != null ? step.videoStreamingName : "";
         AudioClip dub = step != null ? step.voice : null;
         float fadeInDuration = step != null ? Mathf.Max(0f, step.videoFadeInDuration) : 0f;
         bool hasBeats = HasSubtitleBeats(step);
 
         float voiceDuration = !hasBeats ? PlayVoice(dub) : 0f;
-        if (videoPlayer == null || videoDisplay == null)
+        if (clip == null || videoPlayer == null || videoDisplay == null)
         {
             if (voiceDuration > 0f) yield return new WaitForSeconds(voiceDuration);
             onWaited?.Invoke(voiceDuration);
@@ -782,24 +780,9 @@ public class OpeningVideoController : MonoBehaviour
         videoPlayer.Stop();
         videoPlayer.playOnAwake = false;
         videoPlayer.waitForFirstFrame = true;
-        if (clip != null)
-        {
-            videoPlayer.source = VideoSource.VideoClip;
-            videoPlayer.clip = clip;
-            videoPlayer.url = "";
-        }
-        else if (VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
-        {
-            videoPlayer.source = VideoSource.Url;
-            videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
-            videoPlayer.clip = null;
-        }
-        else
-        {
-            if (voiceDuration > 0f) yield return new WaitForSeconds(voiceDuration);
-            onWaited?.Invoke(voiceDuration);
-            yield break;
-        }
+        videoPlayer.source = VideoSource.VideoClip;
+        videoPlayer.clip = clip;
+        videoPlayer.url = "";
         videoPlayer.isLooping = false;
         videoPlayer.renderMode = VideoRenderMode.RenderTexture;
         videoPlayer.audioOutputMode = VideoAudioOutputMode.Direct;
@@ -877,10 +860,7 @@ public class OpeningVideoController : MonoBehaviour
             videoDisplay.color = Color.white;
         }
 
-        float reportedVideoLen = 0f;
-        if (clip != null) reportedVideoLen = (float)clip.length;
-        else if (videoPlayer != null && videoPlayer.length > 0.001d) reportedVideoLen = (float)videoPlayer.length;
-        float videoLen = Mathf.Max(0.01f, reportedVideoLen);
+        float videoLen = Mathf.Max(0.01f, (float)clip.length);
         if (hasBeats)
         {
             if (UsesVideoTimelineCues(step))
