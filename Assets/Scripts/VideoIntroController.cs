@@ -74,14 +74,10 @@ public class VideoIntroController : MonoBehaviour
                 videoPlayer.source = VideoSource.VideoClip;
                 videoPlayer.clip = videoClip;
             }
-            else
+            else if (VideoPlaybackUtility.HasStreamingMediaSource("video/intro.mp4"))
             {
-                var url = System.IO.Path.Combine(Application.streamingAssetsPath, "intro.mp4");
-                if (System.IO.File.Exists(url))
-                {
-                    videoPlayer.source = VideoSource.Url;
-                    videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(url);
-                }
+                videoPlayer.source = VideoSource.Url;
+                videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl("video/intro.mp4");
             }
 
             videoPlayer.Prepare();

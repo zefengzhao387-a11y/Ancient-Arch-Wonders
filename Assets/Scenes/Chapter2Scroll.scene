@@ -938,11 +938,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 549824115}
   scrollFlyClip: {fileID: 0}
-  scrollFlyStreamingName: chapter2_scroll_fly.mp4
+  scrollFlyStreamingName: video/chapter2_scroll_fly.mp4
   videoDisplay: {fileID: 1737222542}
   clickOverlay: {fileID: 360909315}
   unfurlClip: {fileID: 0}
-  unfurlStreamingName: chapter2_unfurl.mp4
+  unfurlStreamingName: video/chapter2_unfurl.mp4
   drawingPanel: {fileID: 94405274}
   drawingImage: {fileID: 94405275}
   drawingSprite: {fileID: 21300000, guid: ee030bc476286184eafa996fce3aa36e, type: 3}

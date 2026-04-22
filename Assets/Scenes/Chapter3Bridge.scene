@@ -1894,10 +1894,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   seasonStreamingVideoNames:
-  - chapter3_spring.mp4
-  - chapter3_summer.mp4
-  - chapter3_autumn.mp4
-  - chapter3_winter.mp4
+  - video/chapter3_spring.mp4
+  - video/chapter3_summer.mp4
+  - video/chapter3_autumn.mp4
+  - video/chapter3_winter.mp4
   seasonVideoDisplays:
   - {fileID: 1226384724}
   - {fileID: 1026431948}
@@ -1939,7 +1939,7 @@ MonoBehaviour:
   postWinVideoPlayer: {fileID: 904510145}
   postWinVideoDisplay: {fileID: 1903828896}
   postWinVideoClip: {fileID: 0}
-  postWinStreamingVideoName: chapter3_post_compass.mp4
+  postWinStreamingVideoName: video/chapter3_post_compass.mp4
   postWinFadeToBlackDuration: 0.85
   postWinVideoRevealDuration: 1
   postWinDialogPanel: {fileID: 229988676}

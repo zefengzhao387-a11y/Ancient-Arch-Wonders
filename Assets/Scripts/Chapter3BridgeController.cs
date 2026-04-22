@@ -55,7 +55,7 @@ public class Chapter3BridgeController : MonoBehaviour
     [Tooltip("春夏秋冬对应视频，指针指向该季节时在右侧播放")]
     [SerializeField] private VideoClip[] seasonVideos;
     [Tooltip("春夏秋冬对应 StreamingAssets 文件名（当对应 seasonVideos 为空时生效）")]
-    [SerializeField] private string[] seasonStreamingVideoNames = new[] { "chapter3_spring.mp4", "chapter3_summer.mp4", "chapter3_autumn.mp4", "chapter3_winter.mp4" };
+    [SerializeField] private string[] seasonStreamingVideoNames = new[] { "video/chapter3_spring.mp4", "video/chapter3_summer.mp4", "video/chapter3_autumn.mp4", "video/chapter3_winter.mp4" };
     [SerializeField] private RawImage[] seasonVideoDisplays;
     [SerializeField] private VideoPlayer[] seasonVideoPlayers;
     [Tooltip("春夏秋冬范围(度)，每季 X=起始 Y=结束。默认 春0-90 夏270-360 秋90-180 冬180-270")]
@@ -110,8 +110,8 @@ public class Chapter3BridgeController : MonoBehaviour
     [SerializeField] private RawImage postWinVideoDisplay;
     [Tooltip("通关后播放的短片；也可仅用 StreamingAssets 文件名")]
     [SerializeField] private VideoClip postWinVideoClip;
-    [Tooltip("若未拖 clip，则尝试 StreamingAssets 下此文件名，例如 chapter3_post_compass.mp4")]
-    [SerializeField] private string postWinStreamingVideoName = "chapter3_post_compass.mp4";
+    [Tooltip("若未拖 clip，则尝试 StreamingAssets 下此文件名，例如 video/chapter3_post_compass.mp4")]
+    [SerializeField] private string postWinStreamingVideoName = "video/chapter3_post_compass.mp4";
     [SerializeField] private float postWinFadeToBlackDuration = 0.85f;
     [SerializeField] private float postWinVideoRevealDuration = 1f;
     [SerializeField] private GameObject postWinDialogPanel;
@@ -844,8 +844,7 @@ public class Chapter3BridgeController : MonoBehaviour
     {
         if (postWinVideoPlayer == null || postWinVideoDisplay == null) return false;
         if (postWinVideoClip != null) return true;
-        if (string.IsNullOrEmpty(postWinStreamingVideoName)) return false;
-        return File.Exists(Path.Combine(Application.streamingAssetsPath, postWinStreamingVideoName));
+        return VideoPlaybackUtility.HasStreamingMediaSource(postWinStreamingVideoName);
     }
 
     private IEnumerator PostWinSequence()
@@ -900,9 +899,8 @@ public class Chapter3BridgeController : MonoBehaviour
             }
             else
             {
-                var path = Path.Combine(Application.streamingAssetsPath, postWinStreamingVideoName);
                 postWinVideoPlayer.source = VideoSource.Url;
-                postWinVideoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(path);
+                postWinVideoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(postWinStreamingVideoName);
                 postWinVideoPlayer.clip = null;
             }
 

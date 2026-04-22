@@ -118,15 +118,11 @@ public class Chapter1PostMiniGameController : MonoBehaviour
                 videoPlayer.clip = videoClip;
                 hasSource = true;
             }
-            else
+            else if (VideoPlaybackUtility.HasStreamingMediaSource("video/chapter1_outro.mp4"))
             {
-                var url = System.IO.Path.Combine(Application.streamingAssetsPath, "chapter1_outro.mp4");
-                if (System.IO.File.Exists(url))
-                {
-                    videoPlayer.source = VideoSource.Url;
-                    videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(url);
-                    hasSource = true;
-                }
+                videoPlayer.source = VideoSource.Url;
+                videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl("video/chapter1_outro.mp4");
+                hasSource = true;
             }
 
             if (!hasSource)

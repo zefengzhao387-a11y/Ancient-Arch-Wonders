@@ -880,7 +880,7 @@ MonoBehaviour:
     animationFrames: []
     frameInterval: 0
     video: {fileID: 0}
-    videoStreamingName: opening_step_1.mp4
+    videoStreamingName: video/opening_step_1.mp4
     videoFadeInDuration: 0.2
     voice: {fileID: 0}
     minDuration: 0.2
@@ -917,7 +917,7 @@ MonoBehaviour:
     animationFrames: []
     frameInterval: 0
     video: {fileID: 0}
-    videoStreamingName: opening_step_2.mp4
+    videoStreamingName: video/opening_step_2.mp4
     videoFadeInDuration: 0.5
     voice: {fileID: 0}
     minDuration: 0.2
@@ -945,7 +945,7 @@ MonoBehaviour:
   strictBlackFadeFromStepNumber: 6
   strictBlackSlideFadeInDuration: 0.55
   bridgeTransitionClip: {fileID: 0}
-  bridgeTransitionStreamingName: intro_bridge.mp4
+  bridgeTransitionStreamingName: video/intro_bridge.mp4
   bridgeVideoFadeInDuration: 0.45
   bridgeToChapterFadeDuration: 0.85
   nextSceneName: Chapter1Intro

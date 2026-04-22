@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 结尾演出：黑场渐显 → 首图+字幕（可配音）→ 点击继续 → 首图与视频区交叉渐隐/渐显 → 视频段间渐隐+渐显 → 遮罩渐隐/渐显接插图与结尾 → 回主菜单。
-/// 视频可拖 VideoClip，或 StreamingAssets：ending_part1.mp4 / ending_part2.mp4。
+/// 视频可拖 VideoClip，或 StreamingAssets：video/ending_part1.mp4 / video/ending_part2.mp4。
 /// </summary>
 public class GameEndingController : MonoBehaviour
 {
@@ -153,9 +153,9 @@ public class GameEndingController : MonoBehaviour
         SetClickable(false);
 
         bool canPlayPart1 = videoPhaseRoot != null && videoPlayer != null && videoDisplay != null &&
-                            (videoPart1Clip != null || HasStreamingClip("ending_part1.mp4"));
+                            (videoPart1Clip != null || HasStreamingClip("video/ending_part1.mp4"));
         bool canPlayPart2 = videoPhaseRoot != null && videoPlayer != null && videoDisplay != null &&
-                            (videoPart2Clip != null || HasStreamingClip("ending_part2.mp4"));
+                            (videoPart2Clip != null || HasStreamingClip("video/ending_part2.mp4"));
         bool willPlayAnyVideo = canPlayPart1 || canPlayPart2;
         bool crossFadeOpeningIntoVideo = openingPhase != null && willPlayAnyVideo;
 
@@ -171,7 +171,7 @@ public class GameEndingController : MonoBehaviour
         {
             videoPhaseRoot.SetActive(true);
             if (crossFadeOpeningIntoVideo) StackOpeningAboveVideoForCrossfade();
-            yield return PlayVideoSegment(videoPart1Clip, "ending_part1.mp4", ShowTwoVideoSubtitles,
+            yield return PlayVideoSegment(videoPart1Clip, "video/ending_part1.mp4", ShowTwoVideoSubtitles,
                 holdLastFrameUntilSubtitlesEnd: true, fadeDisplayInFromZero: true, crossFadeFromOpening: crossFadeOpeningIntoVideo);
 
             CloseOpeningPhaseIfStillVisible();
@@ -180,7 +180,7 @@ public class GameEndingController : MonoBehaviour
             {
                 yield return FadeVideoPhaseOut(fadeOutDuration);
                 TeardownVideo();
-                yield return PlayVideoSegment(videoPart2Clip, "ending_part2.mp4", ShowOneVideoSubtitle,
+                yield return PlayVideoSegment(videoPart2Clip, "video/ending_part2.mp4", ShowOneVideoSubtitle,
                     holdLastFrameUntilSubtitlesEnd: false, fadeDisplayInFromZero: true, crossFadeFromOpening: false);
                 CloseOpeningPhaseIfStillVisible();
                 yield return Fade(0f, 1f, fadeOutDuration);
@@ -194,7 +194,7 @@ public class GameEndingController : MonoBehaviour
         {
             videoPhaseRoot.SetActive(true);
             if (crossFadeOpeningIntoVideo) StackOpeningAboveVideoForCrossfade();
-            yield return PlayVideoSegment(videoPart2Clip, "ending_part2.mp4", ShowOneVideoSubtitle,
+            yield return PlayVideoSegment(videoPart2Clip, "video/ending_part2.mp4", ShowOneVideoSubtitle,
                     holdLastFrameUntilSubtitlesEnd: false, fadeDisplayInFromZero: true, crossFadeFromOpening: crossFadeOpeningIntoVideo);
             CloseOpeningPhaseIfStillVisible();
             yield return Fade(0f, 1f, fadeOutDuration);
@@ -317,14 +317,13 @@ public class GameEndingController : MonoBehaviour
         }
         else
         {
-            var path = System.IO.Path.Combine(Application.streamingAssetsPath, streamingName);
-            if (!System.IO.File.Exists(path))
+            if (!VideoPlaybackUtility.HasStreamingMediaSource(streamingName))
             {
                 videoPlayer.errorReceived -= onErr;
                 yield break;
             }
             videoPlayer.source = VideoSource.Url;
-            videoPlayer.url = VideoPlaybackUtility.FileUrlFromPath(path);
+            videoPlayer.url = VideoPlaybackUtility.ResolveStreamingMediaUrl(streamingName);
             videoPlayer.clip = null;
         }
 
@@ -416,7 +415,7 @@ public class GameEndingController : MonoBehaviour
 
     private static bool HasStreamingClip(string fileName)
     {
-        return System.IO.File.Exists(System.IO.Path.Combine(Application.streamingAssetsPath, fileName));
+        return VideoPlaybackUtility.HasStreamingMediaSource(fileName);
     }
 
     private static float SubtitleWait(float minHold, AudioClip clip)

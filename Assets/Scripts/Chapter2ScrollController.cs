@@ -12,7 +12,7 @@ public class Chapter2ScrollController : MonoBehaviour
     [Header("卷轴飞来")]
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private VideoClip scrollFlyClip;
-    [SerializeField] private string scrollFlyStreamingName = "chapter2_scroll_fly.mp4";
+    [SerializeField] private string scrollFlyStreamingName = "video/chapter2_scroll_fly.mp4";
     [SerializeField] private RawImage videoDisplay;
 
     [Header("点击区域（叠在视频最后一帧上）")]
@@ -20,7 +20,7 @@ public class Chapter2ScrollController : MonoBehaviour
 
     [Header("解卷轴动画")]
     [SerializeField] private VideoClip unfurlClip;
-    [SerializeField] private string unfurlStreamingName = "chapter2_unfurl.mp4";
+    [SerializeField] private string unfurlStreamingName = "video/chapter2_unfurl.mp4";
 
     [Header("图四")]
     [SerializeField] private GameObject drawingPanel;
